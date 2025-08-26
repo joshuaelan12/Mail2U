@@ -2,6 +2,7 @@ import React from "react";
 import { AppBar, Toolbar, Typography, IconButton, Switch } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
+import AccountMenu from "../../Components/Account Menu/AccountMenu";
 
 function Header({ darkMode, toggleDarkMode, handleSidebarOpen }) {
   return (
@@ -24,6 +25,7 @@ function Header({ darkMode, toggleDarkMode, handleSidebarOpen }) {
           <SearchIcon />
         </IconButton>
         <Switch checked={darkMode} onChange={toggleDarkMode} />
+        <AccountMenu />
       </Toolbar>
     </AppBar>
   );

@@ -16,6 +16,8 @@ import MailIcon from "@mui/icons-material/Mail";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 
+import SimpleDialogDemo from "../../Components/AccountsDialog/SimpleDialog";
+
 
 const mainListItems = [
   { text: "Inbox", path: "/inbox", icon: <InboxIcon /> },
@@ -83,6 +85,10 @@ function Sidebar({ open, onClose }) {
             </ListItemButton>
           </ListItem>
         ))}
+      </List>
+      <List sx={{ padding:"10px" }}>
+        <Divider />
+        <SimpleDialogDemo />
       </List>
     </Box>
   );
