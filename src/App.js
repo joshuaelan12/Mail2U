@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ThemeProvider, createTheme, CssBaseline, Typography } from "@mui/material";
+import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./pages/Header/Header";
 import Sidebar from "./pages/Sidebar/Sidebar";
@@ -46,7 +46,7 @@ function App() {
           <Route path="/spam" element={<Spam />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/" element={<Typography sx={{ p: 3 }}>Welcome to the main page!</Typography>} />
+          <Route path="/" element={<Inbox />} />
         </Routes>
       </ThemeProvider>
     </Router>

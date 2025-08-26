@@ -116,6 +116,9 @@ function Inbox() {
     setSnackbarOpen(false);
   };
 
+
+
+
   const action = (
     <React.Fragment>
       <Button color="secondary" size="small" onClick={handleUndoArchive}>
