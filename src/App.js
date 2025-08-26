@@ -10,6 +10,8 @@ import Drafts from "./pages/Drafts/Drafts";
 import AllMail from "./pages/AllMail/AllMail";
 import Trash from "./pages/Trash/Trash";
 import Spam from "./pages/Spam/Spam";
+import Profile from "./pages/Profile/Profile";
+import Settings from "./pages/Settings/Settings";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -42,6 +44,8 @@ function App() {
           <Route path="/all-mail" element={<AllMail />} />
           <Route path="/trash" element={<Trash />} />
           <Route path="/spam" element={<Spam />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/" element={<Typography sx={{ p: 3 }}>Welcome to the main page!</Typography>} />
         </Routes>
       </ThemeProvider>
