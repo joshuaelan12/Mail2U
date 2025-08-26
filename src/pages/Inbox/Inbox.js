@@ -15,7 +15,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
-import StarIcon from "@mui/icons-material/Star";
+import Star from "@mui/icons-material/Star";
 import CloseIcon from '@mui/icons-material/Close';
 import { Archive } from "@mui/icons-material";
 
@@ -79,7 +79,9 @@ const emails = [
 ];
 
 function Inbox() {
-
+  const [emailList, setEmailList] = React.useState(emails);
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [lastArchivedItem, setLastArchivedItem] = React.useState(null);
   const [starred, setStarred] = React.useState(
     emails.reduce((acc, email) => {
       acc[email.id] = email.starred;
@@ -88,34 +90,42 @@ function Inbox() {
   );
 
   const handleToggleStar = (id, event) => {
-    event.stopPropagation(); 
+    event.stopPropagation();
     setStarred((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const [open, setOpen] = React.useState(false);
-
-  const handleClick = () => {
-    setOpen(true);
+  const handleArchive = (itemToArchive, event) => {
+    event.stopPropagation();
+    setEmailList((prev) => prev.filter((email) => email.id !== itemToArchive.id));
+    setLastArchivedItem(itemToArchive);
+    setSnackbarOpen(true);
   };
 
-  const handleClose = (event, reason) => {
+  const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
+    setSnackbarOpen(false);
+  };
 
-    setOpen(false);
+  const handleUndoArchive = () => {
+    if (lastArchivedItem) {
+      setEmailList((prev) => [...prev, lastArchivedItem].sort((a, b) => a.id - b.id));
+      setLastArchivedItem(null);
+    }
+    setSnackbarOpen(false);
   };
 
   const action = (
     <React.Fragment>
-      <Button color="secondary" size="small" onClick={handleClose}>
+      <Button color="secondary" size="small" onClick={handleUndoArchive}>
         UNDO
       </Button>
       <IconButton
         size="small"
         aria-label="close"
         color="inherit"
-        onClick={handleClose}
+        onClick={handleSnackbarClose}
       >
         <CloseIcon fontSize="small" />
       </IconButton>
@@ -129,7 +139,7 @@ function Inbox() {
       </Typography>
       <Paper sx={{ width: "100%", bgcolor: "background.paper" }}>
         <List sx={{ p: 0 }}>
-          {emails.map((email) => (
+          {emailList.map((email) => (
             <React.Fragment key={email.id}>
               <ListItem
                 secondaryAction={
@@ -140,21 +150,15 @@ function Inbox() {
                       onClick={(e) => handleToggleStar(email.id, e)}
                     >
                       {starred[email.id] ? (
-                        <StarIcon color="warning" />
+                        <Star color="warning" />
                       ) : (
                         <StarBorderIcon />
                       )}
                     </IconButton>
 
-                    <Archive  onClick={handleClick}/>
-                        <Snackbar
-                            open={open}
-                            autoHideDuration={6000}
-                            onClose={handleClose}
-                            message="Note archived"
-                            action={action}
-                    />
-
+                    <IconButton onClick={(e) => handleArchive(email, e)}>
+                      <Archive />
+                    </IconButton>
 
                     <Typography variant="caption" sx={{ ml: 2, minWidth: '60px', textAlign: 'right' }}>
                       {email.date}
@@ -222,6 +226,13 @@ function Inbox() {
           ))}
         </List>
       </Paper>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message="Conversation archived"
+        action={action}
+      />
     </Box>
   );
 }
