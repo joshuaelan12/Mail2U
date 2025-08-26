@@ -24,9 +24,9 @@ const emails = [
     id: 1,
     sender: "TechKnow237",
     subject:
-      "Hi, Check this out! https://techknow237.netlify.app",
+      "Website Review! ",
     snippet:
-      "Check out our website and give reviews.",
+      "Check out our website and give reviews.https://techknow237.netlify.app",
     read: true,
     starred: false,
     date: "3:45 PM",
@@ -133,7 +133,7 @@ function Inbox() {
   );
 
   return (
-    <Box sx={{ p: 3, width: "100%" }}>
+    <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, width: "100%" }}>
       <Typography variant="h4" gutterBottom>
         Inbox
       </Typography>
@@ -156,11 +156,17 @@ function Inbox() {
                       )}
                     </IconButton>
 
-                    <IconButton onClick={(e) => handleArchive(email, e)}>
+                    <IconButton onClick={(e) => handleArchive(email, e)} 
+                    sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
                       <Archive />
                     </IconButton>
 
-                    <Typography variant="caption" sx={{ ml: 2, minWidth: '60px', textAlign: 'right' }}>
+                    <Typography variant="caption" 
+                    sx={{ ml: 2, minWidth: { xs: 'auto', sm: '60px' }, 
+                    textAlign: 'right', whiteSpace: 'wrap' 
+
+                    }}>
+
                       {email.date}
                     </Typography>
                   </Box>
@@ -178,11 +184,12 @@ function Inbox() {
                         variant="body1"
                         sx={{
                           fontWeight: email.read ? "normal" : "bold",
-                          width: '150px',
+                          width: { xs: '100px', sm: '150px' },
                           display: 'inline-block',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
+                          verticalAlign: 'middle',
                         }}
                       >
                         {email.sender}
@@ -205,6 +212,7 @@ function Inbox() {
                           component="span"
                           variant="body2"
                           color="text.secondary"
+                          sx={{ display: { xs: 'none', sm: 'inline' } }}
                         >
                           {" — "}
                           {email.snippet}
