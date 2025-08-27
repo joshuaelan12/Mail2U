@@ -19,6 +19,8 @@ import Star from "@mui/icons-material/Star";
 import CloseIcon from '@mui/icons-material/Close';
 import { Archive } from "@mui/icons-material";
 
+import FilterButton from "../../Components/Filter Button/FilterButton";
+
 
 
 function Starred({starredEmails, starred, handleToggleStar}) {
@@ -68,9 +70,13 @@ function Starred({starredEmails, starred, handleToggleStar}) {
 
   return (
     <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, width: "100%" }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      
       <Typography variant="h4" gutterBottom>
-        Starred Mails
+        Starred
       </Typography>
+      <FilterButton />
+      </div>
       <Paper sx={{ width: "100%", bgcolor: "background.paper" }}>
         <List sx={{ p: 0 }}>
           {emailList.map((email) => (

@@ -129,7 +129,7 @@ function App() {
           <Route path="/starred" element={<Starred starredEmails={starredEmails} starred={starred} handleToggleStar={handleToggleStar}/>} />
           <Route path="/send-email" element={<SendEmail />} />
           <Route path="/drafts" element={<Drafts />} />
-          <Route path="/all-mail" element={<AllMail />} />
+          <Route path="/all-mail" element={<AllMail emails={emails} setEmailList={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred}/>} />} />
           <Route path="/trash" element={<Trash />} />
           <Route path="/spam" element={<Spam />} />
           <Route path="/profile" element={<Profile />} />
