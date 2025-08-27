@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   Box,
   List,
@@ -13,139 +13,172 @@ import {
   Divider,
   Button,
   Snackbar,
+  ButtonGroup,
 } from "@mui/material";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import Star from "@mui/icons-material/Star";
-import CloseIcon from '@mui/icons-material/Close';
-import { Archive } from "@mui/icons-material";
-
+import { Star, StarBorder, Close, Archive } from "@mui/icons-material";
 import FilterButton from "../../Components/Filter Button/FilterButton";
 
+function AllMail({ emails }) {
+  const [emailList, setEmailList] = useState(emails);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [lastArchivedItem, setLastArchivedItem] = useState(null);
+  const [filter, setFilter] = useState("Show All");
 
+  const handleFilterChange = useCallback((selectedFilter) => {
+    setFilter(selectedFilter);
+  }, []);
 
-
-function AllMail ({emails, starred, handleToggleStar}) {
-  const [emailList, setEmailList] = React.useState(emails);
-  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
-  const [lastArchivedItem, setLastArchivedItem] = React.useState(null);
-  
-
-  const handleArchive = (itemToArchive, event) => {
-    event.stopPropagation();
-    setEmailList((prev) => prev.filter((email) => email.id !== itemToArchive.id));
-    setLastArchivedItem(itemToArchive);
-    setSnackbarOpen(true);
-  };
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
+  const displayedEmails = useMemo(() => {
+    if (filter === "Unread Mails") {
+      return emailList.filter((email) => !email.read);
     }
-    setSnackbarOpen(false);
-  };
+    return emailList;
+  }, [emailList, filter]);
 
-  const handleUndoArchive = () => {
+  const handleArchive = useCallback((email, event) => {
+    event.stopPropagation();
+    setEmailList((prev) => prev.filter((e) => e.id !== email.id));
+    setLastArchivedItem(email);
+    setSnackbarOpen(true);
+  }, []);
+
+  const handleUndoArchive = useCallback(() => {
     if (lastArchivedItem) {
-      setEmailList((prev) => [...prev, lastArchivedItem].sort((a, b) => a.id - b.id));
+      setEmailList((prev) =>
+        [...prev, lastArchivedItem].sort((a, b) => a.id - b.id)
+      );
       setLastArchivedItem(null);
     }
     setSnackbarOpen(false);
+  }, [lastArchivedItem]);
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbarOpen(false);
   };
 
+  const handleToggleStar = useCallback((id, event) => {
+    event.stopPropagation();
+    setEmailList((prev) =>
+      prev.map((email) =>
+        email.id === id ? { ...email, starred: !email.starred } : email
+      )
+    );
+  }, []);
 
-  const action = (
-    <React.Fragment>
+  const handleEmailClick = (id) => {
+    setEmailList((prev) =>
+      prev.map((email) =>
+        email.id === id ? { ...email, read: true } : email
+      )
+    );
+  };
+
+  // Mark all emails as read/unread
+  const markAllAsRead = () => {
+    setEmailList((prev) => prev.map((email) => ({ ...email, read: true })));
+  };
+
+  const markAllAsUnread = () => {
+    setEmailList((prev) => prev.map((email) => ({ ...email, read: false })));
+  };
+
+  const snackbarAction = (
+    <>
       <Button color="secondary" size="small" onClick={handleUndoArchive}>
         UNDO
       </Button>
-      <IconButton
-        size="small"
-        aria-label="close"
-        color="inherit"
-        onClick={handleSnackbarClose}
-      >
-        <CloseIcon fontSize="small" />
+      <IconButton size="small" color="inherit" onClick={handleSnackbarClose}>
+        <Close fontSize="small" />
       </IconButton>
-    </React.Fragment>
+    </>
   );
 
   return (
     <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, width: "100%" }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      
-      <Typography variant="h4" gutterBottom>
-        All Mails
-      </Typography>
-      <FilterButton />
-      </div>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
+        <Typography variant="h4">All Mails</Typography>
+        <FilterButton onFilterChange={handleFilterChange} />
+      </Box>
+
+      {/* Mark All as Read / Unread Buttons */}
+      <Box sx={{ mb: 2, display: "flex", justifyContent: "center" }}>
+        <ButtonGroup variant="outlined" size="small">
+          <Button onClick={markAllAsRead}>Mark All as Read</Button>
+          <Button onClick={markAllAsUnread}>Mark All as Unread</Button>
+        </ButtonGroup>
+      </Box>
+
       <Paper sx={{ width: "100%", bgcolor: "background.paper" }}>
         <List sx={{ p: 0 }}>
-          {emailList.map((email) => (
+          {displayedEmails.map((email) => (
             <React.Fragment key={email.id}>
               <ListItem
                 secondaryAction={
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
                     <IconButton
                       edge="end"
-                      aria-label="star"
                       onClick={(e) => handleToggleStar(email.id, e)}
                     >
-                      {starred[email.id] ? (
-                        <Star color="warning" />
-                      ) : (
-                        <StarBorderIcon />
-                      )}
+                      {email.starred ? <Star color="warning" /> : <StarBorder />}
                     </IconButton>
 
-                    <IconButton onClick={(e) => handleArchive(email, e)} 
-                    sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+                    <IconButton
+                      onClick={(e) => handleArchive(email, e)}
+                      sx={{ display: { xs: "none", sm: "inline-flex" } }}
+                    >
                       <Archive />
                     </IconButton>
 
-                    <Typography variant="caption" 
-                    sx={{ ml: 2, minWidth: { xs: 'auto', sm: '60px' }, 
-                    textAlign: 'right', whiteSpace: 'wrap' 
-
-                    }}>
-
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        ml: 2,
+                        minWidth: { xs: "auto", sm: "60px" },
+                        textAlign: "right",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
                       {email.date}
                     </Typography>
                   </Box>
                 }
                 disablePadding
               >
-                <ListItemButton role={undefined} dense>
+                <ListItemButton dense onClick={() => handleEmailClick(email.id)}>
                   <ListItemIcon>
                     <Checkbox edge="start" tabIndex={-1} disableRipple />
                   </ListItemIcon>
                   <ListItemText
                     primary={
                       <Typography
-                        component="span"
                         variant="body1"
                         sx={{
                           fontWeight: email.read ? "normal" : "bold",
-                          width: { xs: '100px', sm: '150px' },
-                          display: 'inline-block',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          verticalAlign: 'middle',
+                          width: { xs: "100px", sm: "150px" },
+                          display: "inline-block",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
                         {email.sender}
                       </Typography>
                     }
                     secondary={
-                      <React.Fragment>
+                      <>
                         <Typography
                           component="span"
                           variant="body2"
                           color="text.primary"
-                          sx={{
-                            fontWeight: email.read ? "normal" : "bold",
-                            display: "inline",
-                          }}
+                          sx={{ fontWeight: email.read ? "normal" : "bold" }}
                         >
                           {email.subject}
                         </Typography>
@@ -153,19 +186,19 @@ function AllMail ({emails, starred, handleToggleStar}) {
                           component="span"
                           variant="body2"
                           color="text.secondary"
-                          sx={{ display: { xs: 'none', sm: 'inline' } }}
+                          sx={{ display: { xs: "none", sm: "inline" } }}
                         >
                           {" — "}
                           {email.snippet}
                         </Typography>
-                      </React.Fragment>
+                      </>
                     }
                     sx={{
-                        '& .MuiListItemText-secondary': {
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                        }
+                      "& .MuiListItemText-secondary": {
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      },
                     }}
                   />
                 </ListItemButton>
@@ -175,12 +208,13 @@ function AllMail ({emails, starred, handleToggleStar}) {
           ))}
         </List>
       </Paper>
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
         message="Conversation archived"
-        action={action}
+        action={snackbarAction}
       />
     </Box>
   );
