@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
+import { ThemeProvider, createTheme, CssBaseline, Toolbar } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./pages/Header/Header";
 import Sidebar from "./pages/Sidebar/Sidebar";
@@ -13,6 +13,9 @@ import Spam from "./pages/Spam/Spam";
 import Profile from "./pages/Profile/Profile";
 import Settings from "./pages/Settings/Settings";
 
+import { Box } from "@mui/material";
+
+import BottomAppBar from "./Components/BottomAppBar/BottomAppBar";
 
 const emails = [
   {
@@ -112,11 +115,12 @@ function App() {
     <Router>
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 'appBar' }} elevation={3}>
         <Header
           darkMode={darkMode}
           toggleDarkMode={() => setDarkMode(!darkMode)}
           handleSidebarOpen={() => setSidebarOpen(true)}
-        />
+        /></Box>
         <Sidebar
           open={isSidebarOpen}
           onClose={() => setSidebarOpen(false)}
@@ -124,18 +128,24 @@ function App() {
           unreadCount={unreadCount}
           emails={emails} 
         />
-        <Routes>
-          <Route path="/inbox" element={<Inbox emails={emails} setEmailList={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred}/>} />
-          <Route path="/starred" element={<Starred starredEmails={starredEmails} starred={starred} handleToggleStar={handleToggleStar}/>} />
-          <Route path="/send-email" element={<SendEmail />} />
-          <Route path="/drafts" element={<Drafts />} />
-          <Route path="/all-mail" element={<AllMail emails={emails} setEmailList={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred}/>} />} />
-          <Route path="/trash" element={<Trash />} />
-          <Route path="/spam" element={<Spam />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/" element={<Inbox  emails={emails} setEmails={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred}/>} />
-        </Routes>
+        <Box component="main" sx={{ flexGrow: 1, pb: { xs: '56px', md: 0 } }}>
+          <Toolbar />
+          <Routes>
+            <Route path="/inbox" element={<Inbox emails={emails} setEmailList={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred}/>} />
+            <Route path="/starred" element={<Starred starredEmails={starredEmails} starred={starred} handleToggleStar={handleToggleStar}/>} />
+            <Route path="/send-email" element={<SendEmail />} />
+            <Route path="/drafts" element={<Drafts />} />
+            <Route path="/all-mail" element={<AllMail emails={emails} setEmailList={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred}/>} />
+            <Route path="/trash" element={<Trash />} />
+            <Route path="/spam" element={<Spam />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/" element={<Inbox  emails={emails} setEmails={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred}/>} />
+          </Routes>
+        </Box>
+        <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+          <BottomAppBar />
+        </Box>
       </ThemeProvider>
     </Router>
   );
