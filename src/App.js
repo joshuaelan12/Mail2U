@@ -73,6 +73,8 @@ const emails = [
   },
 ];
 
+const starredEmails = emails.filter((email) => email.starred);
+
 
 const badgeCount = emails.filter((email) => !email.read).length;
 
@@ -124,7 +126,7 @@ function App() {
         />
         <Routes>
           <Route path="/inbox" element={<Inbox emails={emails} setEmailList={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred}/>} />
-          <Route path="/starred" element={<Starred />} />
+          <Route path="/starred" element={<Starred starredEmails={starredEmails} starred={starred} handleToggleStar={handleToggleStar}/>} />
           <Route path="/send-email" element={<SendEmail />} />
           <Route path="/drafts" element={<Drafts />} />
           <Route path="/all-mail" element={<AllMail />} />
