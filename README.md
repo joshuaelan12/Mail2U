@@ -102,6 +102,3 @@ To contribute:
 This project is licensed under the MIT License.
 Feel free to use and modify it for personal or commercial purposes.
 
----
-
-⚡ Do you also want me to make a **preview screenshot section** (where you can later drop app screenshots/gifs) so your README looks more attractive on GitHub?
