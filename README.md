@@ -1,8 +1,3 @@
-Perfect 👌 Since you’re using Firebase + Node.js for the backend and already deployed on Vercel, here’s a polished README.md you can copy-paste directly into your repo:
-
-⸻
-
-
 # 📧 Mail2U
 
 [![React](https://img.shields.io/badge/React-18-blue?logo=react)](https://react.dev/)
