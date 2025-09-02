@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { ThemeProvider, createTheme, CssBaseline, Toolbar } from "@mui/material";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ThemeProvider, createTheme, CssBaseline, Toolbar, Box } from "@mui/material";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+
 import Header from "./pages/Header/Header";
 import Sidebar from "./pages/Sidebar/Sidebar";
 import Inbox from "./pages/Inbox/Inbox";
@@ -13,9 +14,10 @@ import Spam from "./pages/Spam/Spam";
 import Profile from "./pages/Profile/Profile";
 import Settings from "./pages/Settings/Settings";
 
-import { Box } from "@mui/material";
-
 import BottomAppBar from "./Components/BottomAppBar/BottomAppBar";
+import SignupPage from "./AuthPages/SignupPage/SignupPage";
+import LoginPage from "./AuthPages/LoginPage/LoginPage";
+
 
 const emails = [
   {
@@ -290,77 +292,101 @@ const emails = [
   },
 ];
 
-
 const starredEmails = emails.filter((email) => email.starred);
-
-
 const badgeCount = emails.filter((email) => !email.read).length;
 
 
+const Layout = ({ children, darkMode, toggleDarkMode, isSidebarOpen, setSidebarOpen, badgeCount, unreadCount, emails }) => {
+  const location = useLocation();
+  const hideBars = ["/login", "/signup", "/"].includes(location.pathname);
+
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      {!hideBars && (
+        <Box sx={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: "appBar" }}>
+          <Header
+            darkMode={darkMode}
+            toggleDarkMode={toggleDarkMode}
+            handleSidebarOpen={() => setSidebarOpen(true)}
+          />
+        </Box>
+      )}
+
+      {!hideBars && (
+        <Sidebar
+          open={isSidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          badgeCount={badgeCount}
+          unreadCount={unreadCount}
+          emails={emails}
+        />
+      )}
+
+      <Box component="main" sx={{ flexGrow: 1, pb: { xs: hideBars ? 0 : "56px", md: 0 } }}>
+        {!hideBars && <Toolbar />}
+        {children}
+      </Box>
+
+      {!hideBars && (
+        <Box sx={{ display: { xs: "block", md: "none" } }}>
+          <BottomAppBar />
+        </Box>
+      )}
+    </Box>
+  );
+};
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [emailList, setEmailList] = useState(emails);
 
-
-  const [starred, setStarred] = React.useState(
+  const [starred, setStarred] = useState(
     emails.reduce((acc, email) => {
       acc[email.id] = email.starred;
       return acc;
     }, {})
   );
-  
+
   const handleToggleStar = (id, event) => {
     event.stopPropagation();
     setStarred((prev) => ({ ...prev, [id]: !prev[id] }));
   };
-  
 
   const theme = createTheme({
-    palette: {
-      mode: darkMode ? "dark" : "light",
-    },
+    palette: { mode: darkMode ? "dark" : "light" },
   });
 
   const unreadCount = emailList.filter((email) => !email.read).length;
-
 
   return (
     <Router>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 'appBar' }} elevation={3}>
-        <Header
+        <Layout
           darkMode={darkMode}
           toggleDarkMode={() => setDarkMode(!darkMode)}
-          handleSidebarOpen={() => setSidebarOpen(true)}
-        /></Box>
-        <Sidebar
-          open={isSidebarOpen}
-          onClose={() => setSidebarOpen(false)}
+          isSidebarOpen={isSidebarOpen}
+          setSidebarOpen={setSidebarOpen}
           badgeCount={badgeCount}
           unreadCount={unreadCount}
-          emails={emails} 
-        />
-        <Box component="main" sx={{ flexGrow: 1, pb: { xs: '56px', md: 0 } }}>
-          <Toolbar />
+          emails={emails}
+        >
           <Routes>
-            <Route path="/inbox" element={<Inbox emails={emails} setEmailList={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred}/>} />
-            <Route path="/starred" element={<Starred starredEmails={starredEmails} starred={starred} handleToggleStar={handleToggleStar}/>} />
+            <Route path="/inbox" element={<Inbox emails={emails} setEmailList={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred} />} />
+            <Route path="/starred" element={<Starred starredEmails={starredEmails} starred={starred} handleToggleStar={handleToggleStar} />} />
             <Route path="/send-email" element={<SendEmail />} />
             <Route path="/drafts" element={<Drafts />} />
-            <Route path="/all-mail" element={<AllMail emails={emails} setEmailList={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred}/>} />
+            <Route path="/all-mail" element={<AllMail emails={emails} setEmailList={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred} />} />
             <Route path="/trash" element={<Trash />} />
             <Route path="/spam" element={<Spam />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/" element={<Inbox  emails={emails} setEmails={setEmailList} handleToggleStar={handleToggleStar} starred={starred} setStarred={setStarred}/>} />
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
           </Routes>
-        </Box>
-        <Box sx={{ display: { xs: 'block', md: 'none' } }}>
-          <BottomAppBar />
-        </Box>
+        </Layout>
       </ThemeProvider>
     </Router>
   );

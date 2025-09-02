@@ -14,7 +14,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Typography from '@mui/material/Typography';
 import { blue } from '@mui/material/colors';
 
-const emails = ['joshuaelangwe12@gmail.com', 'info@joshuaelan12.com'];
+const emails = ['joshuaelangwe12@mail2u.com', 'info@mail2u.com'];
 
 function SimpleDialog(props) {
   const { onClose, selectedValue, open } = props;
